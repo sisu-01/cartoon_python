@@ -1,0 +1,11 @@
+#db
+mysql-connector-python
+
+#clustering
+python-mecab-ko
+scikit-learn
+matplotlib
+
+#scraping
+requests
+beautifulsoup4
