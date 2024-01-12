@@ -1,4 +1,4 @@
-from scrap.scsc import main
+from python.scraping.scraping import main
 
 main(True)
 
