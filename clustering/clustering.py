@@ -15,8 +15,14 @@ def main(eps, vectors, list):
             clusters[label] = {
                 'id': list[i][0],
                 'title': list[i][1],
+                'count': 0,
+                'recommend': 0,
+                'date': '',
                 'list': ''
             }
+        clusters[label]['count'] += 1
+        clusters[label]['recommend'] += list[i][3]
+        clusters[label]['date'] = str(list[i][2])
         clusters[label]['list'] += str(list[i][0])+','
 
     return clusters
