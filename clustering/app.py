@@ -16,11 +16,12 @@ def main():
     vectors = vectorization(data)
     # 군집화
     result = clustering(eps, vectors, list)
+
     for i in result.keys():
         if i == -1:
             continue
-        print(f'\n{i}번째 시리즈')
         insert_sql = f"INSERT INTO series (id, title) VALUES ({result[i]['id']}, '{result[i]['title']}')"
-        a = run_sql(insert_sql, None)
-        if a:
-            print(f"UPDATE cartoon SET series_id = {result[i]['id']} WHERE id IN {result[i]['list']}")
+        insert_result = run_sql(insert_sql, None)
+        if insert_result:
+            update_sql = f"UPDATE cartoon SET series_id = {result[i]['id']} WHERE id IN ({result[i]['list'][:-1]})"
+            run_sql(update_sql, None)
