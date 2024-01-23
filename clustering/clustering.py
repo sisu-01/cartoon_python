@@ -1,18 +1,7 @@
-def main(distance, eps, vectors, list):
-    #clusters = hizz(distance, vectors)
-    clusters = dbscan(eps, vectors, list)
-    return clusters
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.cluster import DBSCAN
 
-def hizz(distance, vectors):
-    from sklearn.cluster import AgglomerativeClustering
-    # 계층적 클러스터링
-    model = AgglomerativeClustering(distance_threshold=distance, n_clusters=None)
-    clusters = model.fit_predict(vectors.toarray())
-    return clusters
-
-def dbscan(eps, vectors, list):
-    from sklearn.metrics.pairwise import cosine_similarity
-    from sklearn.cluster import DBSCAN
+def main(eps, vectors, list):
     # dbscan 클러스터링
     cosine_sim_matrix = cosine_similarity(vectors, vectors)
     #0.38
@@ -33,6 +22,5 @@ def dbscan(eps, vectors, list):
         for sentence in cluster_sentences:
             print(f"  - {sentence}")
         print("\n")
-    
-    
+
     return clusters
