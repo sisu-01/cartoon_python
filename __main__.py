@@ -1,6 +1,6 @@
-from python.scraping.scraping import main
+from scraping.scraping import main
 
-main(True)
+main(False)
 
 # from db import get_cartoon_list
 # from preprocessing import main as pre_processing

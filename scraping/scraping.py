@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from db import run_sql
+from utils.db import run_sql
 
 def validation(soup, newest):
     # 공지 건너뛰기
@@ -46,6 +46,7 @@ loop = 5
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 }
+
 def scraping(newest):
     print(f'id {newest}까지 간다')
     for i in range(1, loop+1):
