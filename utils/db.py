@@ -24,7 +24,10 @@ def run_sql(pool, sql, values=None, fetch_result=False):
         cursor.execute(sql, values)
         
         if fetch_result:
-            result = cursor.fetchall()
+            if cursor.rowcount > 0:
+                result = cursor.fetchall()
+            else:
+                result = None
         else:
             result = True
 
