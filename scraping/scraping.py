@@ -100,7 +100,7 @@ def main():
     sql = 'SELECT id FROM cartoon WHERE 1=1 ORDER BY id DESC LIMIT 1'
     data = run_sql(connection_pool, sql, None, True)
 
-    if len(data) == 0:
+    if data == None:
         scraping_result = scraping(connection_pool, 0)
     else:
         scraping_result = scraping(connection_pool, data[0][0])
