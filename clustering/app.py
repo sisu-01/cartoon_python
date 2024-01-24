@@ -36,10 +36,10 @@ def set_series(connection_pool, id_nickname, values):
     insert_result = run_sql(connection_pool, insert_sql, series_values)
     if insert_result:
         update_sql = (
-            'UPDATE cartoon SET series_id = %s '
-            'WHERE id IN (%s)'
+            f'UPDATE cartoon SET series_id = %s '
+            f'WHERE id IN ({", ".join(["%s"] * len(values["list"]))})'
         )
-        run_sql(connection_pool, update_sql, (values['id'], values['list'][:-1]))
+        run_sql(connection_pool, update_sql, [values['id']]+values["list"])
 
 def main(id_nickname):
     try:

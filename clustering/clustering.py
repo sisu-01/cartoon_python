@@ -18,12 +18,12 @@ def main(eps, vectors, list):
                 'count': 0,
                 'recommend': 0,
                 'date': '',
-                'list': ''
+                'list': []
             }
         clusters[label]['count'] += 1
         clusters[label]['recommend'] += list[i][3]
         clusters[label]['date'] = str(list[i][2])
-        clusters[label]['list'] += str(list[i][0])+','
+        clusters[label]['list'].append(list[i][0])
 
     return clusters
 
