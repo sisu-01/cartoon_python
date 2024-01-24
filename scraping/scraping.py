@@ -34,7 +34,11 @@ def make_values(soup):
     title = soup.select_one('td.gall_tit a').text
     tempId = soup.select_one('.gall_writer').get('data-uid')
     writer_id = 'a' if not tempId else tempId
-    writer_nickname = soup.select_one('td.gall_writer span.nickname em').text
+    temp_nickname = soup.select_one('td.gall_writer span.nickname em')
+    if temp_nickname == None:
+        writer_nickname = soup.select_one('td.gall_writer').get('data-nick')
+    else:
+        writer_nickname = temp_nickname.text
     date = soup.select_one('.gall_date').get('title')
     recommend = soup.select_one('.gall_recommend').text
 
