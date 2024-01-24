@@ -1,8 +1,8 @@
 from scraping.scraping import main
-main()
+#main()
 
 from clustering.app import main as group
-#group()
+group('catiff', '카티프')
 
 """
 할일: 스크래핑 loop 한계 있는거 고치셈
