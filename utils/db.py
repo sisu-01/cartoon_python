@@ -38,4 +38,5 @@ def run_sql(pool, sql, values=None, fetch_result=False):
         return result
     except mysql.connector.Error as e:
         print(f'Error: {e}')
+        conn.rollback()
         return False
