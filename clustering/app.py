@@ -46,3 +46,14 @@ def main(writer_id, writer_nickname):
             if i == -1:
                 continue
             set_series(connection_pool, writer_id, writer_nickname, result[i])
+
+"""
+class 어쩌구():
+    def __init__(self, *args, **kwargs):
+        self.writer_id = 어쩌구
+        self.writer_nickname = 어쩌구
+    def clustering():
+        어쩌구
+    def reset_series():
+    def set_series():
+"""
