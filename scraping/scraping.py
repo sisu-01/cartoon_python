@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from utils.db import run_sql
+from utils.db import create_connection_pool, run_sql
 
 def validation(soup, newest):
     # 공지 건너뛰기
@@ -46,7 +46,7 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 }
 
-def scraping(newest):
+def scraping(connection_pool, newest):
     print(f'id {newest}까지 간다')
     i = 1
     while True:
@@ -74,24 +74,25 @@ def scraping(newest):
                 recommend = recommend+{values[0][4]},
                 average = recommend / count
             '''
-            writer_result = run_sql(writer_sql, values[0])
+            writer_result = run_sql(connection_pool, writer_sql, values[0])
             if writer_result:
                 cartoon_sql = '''
                 INSERT INTO cartoon (id, title, writer_id, writer_nickname, date, recommend)
                 VALUES (%s, %s, %s, %s, %s, %s)
                 '''
-                run_sql(cartoon_sql, values[1])
+                run_sql(connection_pool, cartoon_sql, values[1])
                 if newest == 0 and int(values[1][0]) == 67:
                     return True
         i += 1
 
 def main():
+    connection_pool = create_connection_pool()
     sql = 'SELECT id FROM cartoon WHERE 1=1 ORDER BY id DESC LIMIT 1'
-    data = run_sql(sql, None, True)
+    data = run_sql(connection_pool, sql, None, True)
 
     if len(data) == 0:
-        scraping_result = scraping(0)
+        scraping_result = scraping(connection_pool, 0)
     else:
-        scraping_result = scraping(data[0][0])
+        scraping_result = scraping(connection_pool, data[0][0])
     if scraping_result:
             print('성공적으로 싹 훑었습니다.')

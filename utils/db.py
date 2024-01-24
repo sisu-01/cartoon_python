@@ -1,15 +1,25 @@
 import json
 import mysql.connector
+from mysql.connector import pooling
 
+# db 접속 정보 불러오기
 def load_config(file_path):
     with open(file_path, 'r') as config_file:
         config = json.load(config_file)
     return config
 
-def run_sql(sql, values=None, fetch_result=False):
+# 커넥션 풀 생성
+def create_connection_pool():
+    db_config = load_config('config/db.json')['db_config']
+    return pooling.MySQLConnectionPool(pool_name="my_pool", pool_size=5, **db_config)
+
+def run_sql(pool, sql, values=None, fetch_result=False):
     try:
-        db_config = load_config('config/db.json')['db_config']
-        conn = mysql.connector.connect(**db_config)
+
+        #db_config = load_config('config/db.json')['db_config']
+        #conn = mysql.connector.connect(**db_config)
+        conn = pool.get_connection()
+
         cursor = conn.cursor(buffered=True)
         cursor.execute(sql, values)
         
@@ -24,5 +34,5 @@ def run_sql(sql, values=None, fetch_result=False):
 
         return result
     except mysql.connector.Error as e:
-        print(f"Error: {e}")
+        print(f'Error: {e}')
         return False
