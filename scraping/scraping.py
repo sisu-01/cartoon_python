@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from utils.db import create_connection_pool, run_sql
+from clustering.app import main as group
 
 def validation(soup, newest):
     # 공지 건너뛰기
@@ -84,7 +85,12 @@ def scraping(connection_pool, newest):
                 INSERT INTO cartoon (id, title, writer_id, writer_nickname, date, recommend)
                 VALUES (%s, %s, %s, %s, %s, %s)
                 '''
-                run_sql(connection_pool, cartoon_sql, values[1])
+                cartoon_result = run_sql(connection_pool, cartoon_sql, values[1])
+                if cartoon_result:
+                    is_a = values[0][0] == 'a'
+                    is_dd = values[0][1] == 'ㅇㅇ' or values[0][1] == '카갤러'
+                    if not (is_a and is_dd):
+                        group(values[1][2], values[1][3])
                 if newest == 0 and int(values[1][0]) == 67:
                     return True
         i += 1
