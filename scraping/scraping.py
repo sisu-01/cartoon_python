@@ -90,7 +90,7 @@ def scraping(connection_pool, newest):
                     is_a = values[0][0] == 'a'
                     is_dd = values[0][1] == 'ㅇㅇ' or values[0][1] == '카갤러'
                     if not (is_a and is_dd):
-                        group(values[1][2], values[1][3])
+                        group((values[1][2], values[1][3]))
                 if newest == 0 and int(values[1][0]) == 67:
                     return True
         i += 1

@@ -3,38 +3,55 @@ from clustering.preprocessing import main as pre_processing
 from clustering.vectorization import main as vectorization
 from clustering.clustering import main as clustering
 
-def reset_series(connection_pool, writer_id, writer_nickname):
-    set_null_result = run_sql(connection_pool, f'UPDATE cartoon SET series_id = null WHERE writer_id = \'{writer_id}\' AND writer_nickname = \'{writer_nickname}\';', None)
+def reset_series(connection_pool, id_nickname):
+    id_nickname
+    update_sql = (
+        'UPDATE cartoon SET series_id = null '
+        'WHERE writer_id = %s AND writer_nickname = %s'
+    )
+    set_null_result = run_sql(connection_pool, update_sql, id_nickname)
     if set_null_result:
-        delete_series_result = run_sql(connection_pool, f'DELETE FROM series WHERE writer_id = \'{writer_id}\' AND writer_nickname = \'{writer_nickname}\'', None)
+        delete_sql = (
+            'DELETE FROM series '
+            'WHERE writer_id = %s AND writer_nickname = %s'
+        )
+        delete_series_result = run_sql(connection_pool, delete_sql, id_nickname)
         if delete_series_result:
             return True
     return False
 
-def set_series(connection_pool, writer_id, writer_nickname, values):
+def set_series(connection_pool, id_nickname, values):
     insert_sql = (
         'INSERT INTO series (id, title, writer_id, writer_nickname, count, last_update, average) '
-        'VALUES({}, \'{}\', \'{}\', \'{}\', {}, \'{}\', {})'
-    ).format(
+        'VALUES(%s, %s, %s, %s, %s, %s, %s)'
+    )
+    series_values = (
         values['id'],
         values['title'],
-        writer_id, writer_nickname,
+        id_nickname[0], id_nickname[1],
         values['count'],
         values['date'],
         round(values['recommend'] / values['count'])
     )
-    insert_result = run_sql(connection_pool, insert_sql, None)
+    insert_result = run_sql(connection_pool, insert_sql, series_values)
     if insert_result:
-        update_sql = f"UPDATE cartoon SET series_id = {values['id']} WHERE id IN ({values['list'][:-1]})"
-        run_sql(connection_pool, update_sql, None)
+        update_sql = (
+            'UPDATE cartoon SET series_id = %s '
+            'WHERE id IN (%s)'
+        )
+        run_sql(connection_pool, update_sql, (values['id'], values['list'][:-1]))
 
-def main(writer_id, writer_nickname):
+def main(id_nickname):
     try:
         connection_pool = create_connection_pool()
         eps = 0.1
 
         # 작가의 만화 목록 불러오기
-        list = run_sql(connection_pool, f'SELECT id, title, date, recommend FROM cartoon WHERE writer_id = \'{writer_id}\' AND writer_nickname = \'{writer_nickname}\' ORDER BY id ASC', None, True)
+        select_sql = (
+            'SELECT id, title, date, recommend FROM cartoon '
+            'WHERE writer_id = %s AND writer_nickname = %s ORDER BY id ASC'
+        )
+        list = run_sql(connection_pool, select_sql, id_nickname, True)
         if len(list) >= 2:
             # 형태소 분리
             data = pre_processing(list)
@@ -43,11 +60,11 @@ def main(writer_id, writer_nickname):
             # 군집화
             result = clustering(eps, vectors, list)
 
-            if reset_series(connection_pool, writer_id, writer_nickname):
+            if reset_series(connection_pool, id_nickname):
                 for i in result.keys():
                     if i == -1:
                         continue
-                    set_series(connection_pool, writer_id, writer_nickname, result[i])
+                    set_series(connection_pool, id_nickname, result[i])
     except Exception as e:
         print(e)
 
