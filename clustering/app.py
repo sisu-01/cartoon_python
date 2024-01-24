@@ -41,9 +41,8 @@ def set_series(connection_pool, id_nickname, values):
         )
         run_sql(connection_pool, update_sql, [values['id']]+values["list"])
 
-def main(id_nickname):
+def main(connection_pool, id_nickname):
     try:
-        connection_pool = create_connection_pool()
         eps = 0.1
 
         # 작가의 만화 목록 불러오기
