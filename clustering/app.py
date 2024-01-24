@@ -29,23 +29,27 @@ def set_series(connection_pool, writer_id, writer_nickname, values):
         run_sql(connection_pool, update_sql, None)
 
 def main(writer_id, writer_nickname):
-    connection_pool = create_connection_pool()
-    eps = 0.1
+    try:
+        connection_pool = create_connection_pool()
+        eps = 0.1
 
-    # 작가의 만화 목록 불러오기
-    list = run_sql(connection_pool, f'SELECT id, title, date, recommend FROM cartoon WHERE writer_id = \'{writer_id}\' AND writer_nickname = \'{writer_nickname}\' ORDER BY id ASC', None, True)
-    # 형태소 분리
-    data = pre_processing(list)
-    # 벡터화
-    vectors = vectorization(data)
-    # 군집화
-    result = clustering(eps, vectors, list)
+        # 작가의 만화 목록 불러오기
+        list = run_sql(connection_pool, f'SELECT id, title, date, recommend FROM cartoon WHERE writer_id = \'{writer_id}\' AND writer_nickname = \'{writer_nickname}\' ORDER BY id ASC', None, True)
+        if len(list) >= 2:
+            # 형태소 분리
+            data = pre_processing(list)
+            # 벡터화
+            vectors = vectorization(data)
+            # 군집화
+            result = clustering(eps, vectors, list)
 
-    if reset_series(connection_pool, writer_id, writer_nickname):
-        for i in result.keys():
-            if i == -1:
-                continue
-            set_series(connection_pool, writer_id, writer_nickname, result[i])
+            if reset_series(connection_pool, writer_id, writer_nickname):
+                for i in result.keys():
+                    if i == -1:
+                        continue
+                    set_series(connection_pool, writer_id, writer_nickname, result[i])
+    except Exception as e:
+        print(e)
 
 """
 class 어쩌구():
