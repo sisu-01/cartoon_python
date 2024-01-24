@@ -15,7 +15,7 @@ def validation(soup, newest):
     
     # 가장 최신 만화까지 보면 끝내기
     if newest >= int(id):
-        result = 'break'
+        result = 'escape'
         return result
 
     # 만화 게시일 2주 이내
@@ -42,14 +42,16 @@ def make_values(soup):
     cartoon_values = (id, title, writer_id, writer_nickname, date, recommend)
     return [writer_values, cartoon_values]
 
-loop = 5
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 }
 
 def scraping(newest):
     print(f'id {newest}까지 간다')
-    for i in range(1, loop+1):
+    i = 1
+    while True:
+        # if i == 5:
+        #     return True
         print(f'{i}페이지')
         url = f'https://gall.dcinside.com/board/lists/?id=cartoon&page={i}&exception_mode=recommend'
         html = requests.get(url, headers=headers).text
@@ -59,8 +61,8 @@ def scraping(newest):
             validate = validation(soup, newest)
             if validate == 'continue':
                 continue
-            elif validate == 'break':
-                break
+            elif validate == 'escape':
+                return True
             values = make_values(soup)
             writer_sql = f'''
                 INSERT INTO writer (id, nickname, date, count, recommend, average)
@@ -72,19 +74,24 @@ def scraping(newest):
                 recommend = recommend+{values[0][4]},
                 average = recommend / count
             '''
-            result = run_sql(writer_sql, values[0])
-            if result:
+            writer_result = run_sql(writer_sql, values[0])
+            if writer_result:
                 cartoon_sql = '''
                 INSERT INTO cartoon (id, title, writer_id, writer_nickname, date, recommend)
                 VALUES (%s, %s, %s, %s, %s, %s)
                 '''
                 run_sql(cartoon_sql, values[1])
+                if newest == 0 and int(values[1][0]) == 67:
+                    return True
+        i += 1
 
-def main(empty=False):
+def main():
     sql = 'SELECT id FROM cartoon WHERE 1=1 ORDER BY id DESC LIMIT 1'
     data = run_sql(sql, None, True)
-    if not empty and len(data) == 0:
-        return False
+
+    if len(data) == 0:
+        scraping_result = scraping(0)
     else:
-        newest = 1 if empty else data[0][0]
-        scraping(newest)
+        scraping_result = scraping(data[0][0])
+    if scraping_result:
+            print('성공적으로 싹 훑었습니다.')
