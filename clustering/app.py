@@ -20,11 +20,12 @@ def main(id, nickname):
         if i == -1:
             continue
         insert_sql = (
-            'INSERT INTO series (id, title, count, last_update, average) '
-            'VALUES({}, \'{}\', {}, \'{}\', {})'
+            'INSERT INTO series (id, title, writer_id, writer_nickname, count, last_update, average) '
+            'VALUES({}, \'{}\', \'{}\', \'{}\', {}, \'{}\', {})'
         ).format(
             result[i]['id'],
             result[i]['title'],
+            id, nickname,
             result[i]['count'],
             result[i]['date'],
             round(result[i]['recommend'] / result[i]['count'])
