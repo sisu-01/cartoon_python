@@ -3,7 +3,7 @@ from mecab import MeCab
 mecab = MeCab()
 
 # 제거 단어
-exclude_words = ['MANHWA', 'manhwa', 'MANWHA', 'manwha', '만화', '만와', '망가',
+exclude_words = ['MANHWA', 'manhwa', 'MANWHA', 'manwha', '만화', '만와', '망가', '단편', 
                  '프롤로그', '에필로그', '마지막화', '完', '후기', '上', '中', '下',
                  '공지', '휴재', 'bgm', 'BGM', 'ㅇㅎ', '스압']
 
