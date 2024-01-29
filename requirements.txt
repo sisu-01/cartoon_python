@@ -1,11 +1,14 @@
-#db
+# db
 mysql-connector-python
 
-#clustering
+# clustering
 python-mecab-ko
 scikit-learn
 matplotlib
 
-#scraping
+# scraping
 requests
 beautifulsoup4
+
+# scheduling
+schedule
