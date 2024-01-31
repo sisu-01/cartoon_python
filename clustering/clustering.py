@@ -4,7 +4,7 @@ from sklearn.cluster import DBSCAN
 def main(eps, vectors, list):
     # dbscan 클러스터링
     cosine_sim_matrix = cosine_similarity(vectors, vectors)
-    model = DBSCAN(eps=eps, min_samples=2, metric='cosine')
+    model = DBSCAN(eps=eps, min_samples=3, metric='cosine')
     clusters = model.fit(cosine_sim_matrix)
 
     # 군집 결과 출력
