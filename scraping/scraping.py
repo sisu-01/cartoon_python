@@ -52,12 +52,12 @@ headers = {
 }
 
 def scraping(connection_pool, newest):
-    print(f'id {newest}까지 간다')
+    #print(f'id {newest}까지 간다')
     i = 1
     while True:
         # if i == 5:
         #     return True
-        print(f'{i}페이지')
+        #print(f'{i}페이지')
         url = f'https://gall.dcinside.com/board/lists/?id=cartoon&page={i}&exception_mode=recommend'
         html = requests.get(url, headers=headers).text
         soup_list = BeautifulSoup(html, 'html.parser').select('tbody > tr.ub-content')
@@ -105,4 +105,4 @@ def main():
     else:
         scraping_result = scraping(connection_pool, data[0][0])
     if scraping_result:
-            print('성공적으로 싹 훑었습니다.')
+            #print('성공적으로 싹 훑었습니다.')
