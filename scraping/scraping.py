@@ -104,5 +104,5 @@ def main():
         scraping_result = scraping(connection_pool, 0)
     else:
         scraping_result = scraping(connection_pool, data[0][0])
-    if scraping_result:
-            #print('성공적으로 싹 훑었습니다.')
+    if not scraping_result:
+        print('에러 발생')
