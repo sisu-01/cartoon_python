@@ -6,7 +6,7 @@ schedule.every().day.at("21:30").do(main)
 
 while True:
     schedule.run_pending()
-    time.sleep(40)
+    time.sleep(1)
 
 # main()
 
