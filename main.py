@@ -2,7 +2,7 @@ from scraping.scraping import main
 import schedule
 import time
 
-schedule.every().day.at("21:30").do(main)
+schedule.every().day.at("23:00").do(main)
 
 while True:
     schedule.run_pending()
