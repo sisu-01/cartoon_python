@@ -5,6 +5,7 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from utils.db import create_connection_pool, run_sql
 from clustering.app import main as group
+import time
 
 def validation(soup, newest):
     # 공지 건너뛰기
@@ -55,6 +56,7 @@ def scraping(connection_pool, newest):
     #print(f'id {newest}까지 간다')
     i = 1
     while True:
+        time.sleep(1)
         # if i == 5:
         #     return True
         #print(f'{i}페이지')
