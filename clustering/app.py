@@ -43,7 +43,7 @@ def set_series(connection_pool, id_nickname, values):
 
 def main(connection_pool, id_nickname):
     try:
-        eps = 0.04
+        eps = 0.16
 
         # 작가의 만화 목록 불러오기
         select_sql = (
