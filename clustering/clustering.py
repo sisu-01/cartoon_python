@@ -25,11 +25,14 @@ def main(eps, vectors, list):
         clusters[label]['date'] = str(list[i][2])
         clusters[label]['list'].append(list[i][0])
 
-    return clusters
+    # # 결과 출력
+    # for cluster_id, cluster_data in clusters.items():
+    #     print(f"Cluster {cluster_id}:")
+    #     print(f"Title: {cluster_data['title']}")
+    #     print(f"Count: {cluster_data['count']}")
+    #     print(f"Recommend: {cluster_data['recommend']}")
+    #     print(f"Date: {cluster_data['date']}")
+    #     print(f"List: {cluster_data['list']}")
+    #     print()
 
-    # 결과 출력
-    # for cluster_label, cluster_sentences in clusters.items():
-    #     print(f"Cluster {cluster_label}:\n")
-    #     for sentence in cluster_sentences:
-    #         print(f"  - {sentence}")
-    #     print("\n")
+    return clusters
