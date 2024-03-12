@@ -2,11 +2,11 @@ from scraping.scraping import main
 import schedule
 import time
 
-# schedule.every().day.at("23:00").do(main)
+schedule.every().day.at("23:00").do(main)
 
-# while True:
-#     schedule.run_pending()
-#     time.sleep(1)
+while True:
+    schedule.run_pending()
+    time.sleep(1)
 
 def onlyClustering():
     # 작가 목록 싹 돌면서 클러스터링
@@ -22,4 +22,4 @@ def onlyClustering():
             group(pool, row)
 
 #main()
-onlyClustering()
+#onlyClustering()
