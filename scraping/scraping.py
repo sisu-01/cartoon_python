@@ -24,7 +24,7 @@ def validation(soup, newest):
     date_format = '%Y-%m-%d %H:%M:%S'
     date = datetime.strptime(soup.select_one('.gall_date').get('title'), date_format)
     today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    is_within_two_weeks = date - today > timedelta(days=-13)
+    is_within_two_weeks = date - today > timedelta(days=-12)
     if is_within_two_weeks:
         result = 'continue'
         return result
