@@ -15,10 +15,10 @@ wow = db['wow']
 
 def testwow():
   from datetime import datetime
-  new_date = datetime.strptime('2021-05-25', '%Y-%m-%d')
+  new_date = datetime.strptime('2023-06-14', '%Y-%m-%d')
   value = {
     'id': 123,
-    'nickname': 'sisu',
+    'nickname': 'sisu에서시수로변신중',
     'date': new_date,
     'recommend': 100,
   }
@@ -27,7 +27,7 @@ def testwow():
   if latest_field == None:
     insert = {
       'id': value['id'],
-      'nickname': value['nickname'],
+      'nickname': [value['nickname']],
       'first_date': value['date'],
       'last_date': value['date'],
       'count': 1,
@@ -38,7 +38,7 @@ def testwow():
     return result.inserted_id
   else:
     set_value = {}
-    
+
     #first, last 시간 남기기
     if value['date'] < latest_field['first_date']:
       set_value['first_date'] = value['date']
@@ -50,14 +50,11 @@ def testwow():
     set_value['average'] = new_average
 
     #닉변 확인
-    if value['nickname'] != latest_field['nickname']:
-      print('tq')
-      #완전 새삥
-      #000000000000000000000000
-      #과거에 바꾼 기록 있음
-      #0000000000000011111111111
-      #있던 놈이 갑자기 바꿈 시발롬
-      #0000000001111111111
+    if not value['nickname'] in latest_field['nickname']:
+      if value['date'] > latest_field['last_date']:
+        set_value['nickname'] = [value['nickname']] + latest_field['nickname']
+      else:
+        set_value['nickname'] = latest_field['nickname'] + [value['nickname']]
       
 
     a = wow.update_one(
