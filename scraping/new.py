@@ -43,7 +43,7 @@ def validation(soup):
 
 def soup_to_dict(soup):
   id = soup.get('data-no')
-  title = soup.select_one('td.gall_tit a').text
+  title = soup.select_one('td.gall_tit a').text.strip()
   tempId = soup.select_one('.gall_writer').get('data-uid')
   writer_id = 'a' if not tempId else tempId
   temp_nickname = soup.select_one('td.gall_writer span.nickname em')
