@@ -22,5 +22,10 @@ def onlyClustering():
         if not (is_a and is_dd):
             group(pool, row)
 
-main()
+def test():
+    from utils.mongo import testwow
+    testwow()
+
+test()
+#main()
 #onlyClustering()
