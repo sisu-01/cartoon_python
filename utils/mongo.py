@@ -15,8 +15,7 @@ wow = db['wow']
 
 def testwow():
   from datetime import datetime
-  new_date = datetime.strptime('2021-05-26', '%Y-%m-%d')
-
+  new_date = datetime.strptime('2021-05-25', '%Y-%m-%d')
   value = {
     'id': 123,
     'nickname': 'sisu',
@@ -24,18 +23,42 @@ def testwow():
     'recommend': 100,
   }
   
-  old_field = wow.find_one({ "id" : value["id"] })
-  if old_field == None:
-    result = wow.insert_one(value)
+  latest_field = wow.find_one({ "id" : value["id"] })
+  if latest_field == None:
+    insert = {
+      'id': value['id'],
+      'nickname': value['nickname'],
+      'first_date': value['date'],
+      'last_date': value['date'],
+      'count': 1,
+      'recommend': value['recommend'],
+      'average': value['recommend'],
+    }
+    result = wow.insert_one(insert)
     return result.inserted_id
   else:
     set_value = {}
-    #date 비교
-    if value['date'] < old_field['date']:
-      set_value['date'] = value['date']
+    
+    #first, last 시간 남기기
+    if value['date'] < latest_field['first_date']:
+      set_value['first_date'] = value['date']
+    if value['date'] > latest_field['last_date']:
+      set_value['last_date'] = value['date']
+
     #새 평균 구하기
-    new_average = int((old_field['recommend']+value['recommend'])/(old_field['count']+1))
+    new_average = int((latest_field['recommend']+value['recommend'])/(latest_field['count']+1))
     set_value['average'] = new_average
+
+    #닉변 확인
+    if value['nickname'] != latest_field['nickname']:
+      print('tq')
+      #완전 새삥
+      #000000000000000000000000
+      #과거에 바꾼 기록 있음
+      #0000000000000011111111111
+      #있던 놈이 갑자기 바꿈 시발롬
+      #0000000001111111111
+      
 
     a = wow.update_one(
       { 'id': value['id'] },
