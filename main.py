@@ -26,6 +26,6 @@ def test():
     from utils.mongo import testwow
     testwow()
 
-test()
-#main()
+#test()
+main()
 #onlyClustering()

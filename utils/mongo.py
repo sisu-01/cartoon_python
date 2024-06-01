@@ -11,37 +11,33 @@ db = client['cartoon']
 cartoons = db['cartoons']
 writers = db['writers']
 series = db['series']
-wow = db['wow']
 
-def testwow():
-  from datetime import datetime
-  new_date = datetime.strptime('2023-06-14', '%Y-%m-%d')
-  value = {
-    'id': 123,
-    'nickname': 'sisu에서시수로변신중',
-    'date': new_date,
-    'recommend': 100,
-  }
-  
-  latest_field = wow.find_one({ "id" : value["id"] })
+def create_writer(value):
+  # id, nickname, date, recommend
+  if value['id'] == 'a':
+    object_id = anony_writer(value)
+  else:
+    object_id = fix_nik_writer(value)
+  return object_id
+
+def anony_writer(value):
+  latest_field = writers.find_one({"id": value["id"],"nickname": value["nickname"]})
   if latest_field == None:
     insert = {
       'id': value['id'],
-      'nickname': [value['nickname']],
+      'nickname': value['nickname'],
       'first_date': value['date'],
       'last_date': value['date'],
       'count': 1,
       'recommend': value['recommend'],
       'average': value['recommend'],
     }
-    result = wow.insert_one(insert)
+    result = writers.insert_one(insert)
     return result.inserted_id
   else:
     set_value = {}
 
-    #first, last 시간 남기기
-    if value['date'] < latest_field['first_date']:
-      set_value['first_date'] = value['date']
+    #last 시간 갱신
     if value['date'] > latest_field['last_date']:
       set_value['last_date'] = value['date']
 
@@ -49,15 +45,55 @@ def testwow():
     new_average = int((latest_field['recommend']+value['recommend'])/(latest_field['count']+1))
     set_value['average'] = new_average
 
-    #닉변 확인
-    if not value['nickname'] in latest_field['nickname']:
-      if value['date'] > latest_field['last_date']:
-        set_value['nickname'] = [value['nickname']] + latest_field['nickname']
-      else:
-        set_value['nickname'] = latest_field['nickname'] + [value['nickname']]
-      
+    writers.update_one(
+      { 'id': value['id'], 'nickname': value['nickname'] },
+      {
+        "$set": set_value,
+        "$inc": {
+          'count': 1,
+          'recommend': value['recommend'],
+        },
+      }
+    )
+    return latest_field['_id']
 
-    a = wow.update_one(
+def fix_nik_writer(value):
+  latest_field = writers.find_one({ "id" : value["id"] })
+  if latest_field == None:
+    insert = {
+      'id': value['id'],
+      'nickname_history': [{
+        'nickname': value['nickname'],
+        'date': value['date'],
+      }],
+      'first_date': value['date'],
+      'last_date': value['date'],
+      'count': 1,
+      'recommend': value['recommend'],
+      'average': value['recommend'],
+    }
+    result = writers.insert_one(insert)
+    return result.inserted_id
+  else:
+    set_value = {}
+
+    #last 시간 갱신
+    if value['date'] > latest_field['last_date']:
+      set_value['last_date'] = value['date']
+
+    #새 평균 구하기
+    new_average = int((latest_field['recommend']+value['recommend'])/(latest_field['count']+1))
+    set_value['average'] = new_average
+
+    #닉네임 변경 내역 확인
+    if value['nickname'] != latest_field['nickname_history'][0]['nickname']:
+      new_entry = {
+          'nickname': value['nickname'],
+          'date': value['date'],
+      }
+      latest_field['nickname_history'].insert(0, new_entry)
+
+    writers.update_one(
       { 'id': value['id'] },
       {
         "$set": set_value,
@@ -67,12 +103,7 @@ def testwow():
         },
       }
     )
-    print(a)
-
-
-def create_writer(value):
-  result = writers.insert_one(value)
-  return result.inserted_id
+    return latest_field['_id']
 
 def create_cartoon(writer_id, value):
   value['writer_object_id'] = writer_id

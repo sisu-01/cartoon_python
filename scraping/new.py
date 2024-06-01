@@ -9,29 +9,31 @@ headers = {
 
 def main():
   print('zz')
-  scraping(688418)
+  scraping()
 
-def scraping(last_id):
-  page = 1
+def scraping():
+  page = 1497
   while True:
+    print(page)
     #time.sleep(1)
-    if page == 5:
+    if page == 1492:
       return True
-    soup_list = get_soup_list(page)
+    soup_list = get_html(page)
     for soup in soup_list:
       valid_result = validation(soup)
       if valid_result == 'continue':
          continue
       writer_dict, cartoon_dict = soup_to_dict(soup)
       writer_inserted_id = create_writer(writer_dict)
-      cartoon_acknowledged = create_cartoon(writer_inserted_id, cartoon_dict)
-
+      print(writer_inserted_id)
+      #cartoon_acknowledged = create_cartoon(writer_inserted_id, cartoon_dict)
     return True
+    page = page - 1
 
-def get_soup_list(page):
+def get_html(page):
   url = f'https://gall.dcinside.com/board/lists/?id=cartoon&page={page}&exception_mode=recommend'
   html = requests.get(url, headers=headers).text
-  soup_list = BeautifulSoup(html, 'html.parser').select('tbody > tr.ub-content')
+  soup_list = reversed(BeautifulSoup(html, 'html.parser').select('tbody > tr.ub-content'))
   return soup_list
 
 def validation(soup):
@@ -52,15 +54,13 @@ def soup_to_dict(soup):
   else:
     writer_nickname = temp_nickname.text.strip()
   date = soup.select_one('.gall_date').get('title')
-  recommend = soup.select_one('.gall_recommend').text
+  recommend = int(soup.select_one('.gall_recommend').text)
 
   writer_values = {
-    'writer_id': writer_id,
-    'writer_nickname': writer_nickname,
+    'id': writer_id,
+    'nickname': writer_nickname,
     'date': date,
-    'count': 1,
     'recommend': recommend,
-    'average': recommend,
   }
   cartoon_values = {
     'id': id,
