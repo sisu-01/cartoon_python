@@ -12,6 +12,12 @@ cartoons = db['cartoons']
 writers = db['writers']
 series = db['series']
 
+# def read_posts():
+#   """모든 글을 읽는 함수"""
+#   posts = collection.find()
+#   for post in posts:
+#     print(f'ID: {post["_id"]}, 제목: {post["title"]}, 내용: {post["content"]}')
+
 def create_writer(value):
   # id, nickname, date, recommend
   if value['id'] == 'a':
@@ -105,16 +111,10 @@ def fix_nik_writer(value):
     )
     return latest_field['_id']
 
-def create_cartoon(writer_id, value):
-  value['writer_object_id'] = writer_id
+def create_cartoon(writer_object_id, value):
+  value['writer_object_id'] = writer_object_id
   result = cartoons.insert_one(value)
   return result.acknowledged
-
-# def read_posts():
-#   """모든 글을 읽는 함수"""
-#   posts = collection.find()
-#   for post in posts:
-#     print(f'ID: {post["_id"]}, 제목: {post["title"]}, 내용: {post["content"]}')
 
 # def update_post(post_id, title=None, content=None):
 #   """글을 수정하는 함수"""
