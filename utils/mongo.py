@@ -12,11 +12,13 @@ cartoons = db['cartoons']
 writers = db['writers']
 series = db['series']
 
-# def read_posts():
-#   """모든 글을 읽는 함수"""
-#   posts = collection.find()
-#   for post in posts:
-#     print(f'ID: {post["_id"]}, 제목: {post["title"]}, 내용: {post["content"]}')
+def find_latest_cartoon_id():
+  latest_cartoon = cartoons.find_one(sort=[('id', -1)], projection={'id': 1, '_id': 0})
+  if latest_cartoon is None:
+    result = False
+  else:
+    result = latest_cartoon
+  return result
 
 def create_writer(value):
   # id, nickname, date, recommend
@@ -130,12 +132,4 @@ def create_cartoon(writer_object_id, value):
 #         print(f'글 ID {post_id}가 수정되었습니다.')
 #       else:
 #         print(f'글 ID {post_id}를 찾을 수 없거나 변경된 내용이 없습니다.')
-
-# if __name__ == '__main__':
-#     print('test')
-#     test = '요절복통 앰생요정 -1'
-#     create_post(test)
-#     query = {'title': test}
-#     cartoon = cartoons.find_one(query)
-#     print(cartoon)
 

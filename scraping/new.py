@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from utils.mongo import create_writer, create_cartoon
+from utils.mongo import find_latest_cartoon_id, create_writer, create_cartoon
 from utils.test import *
 from datetime import datetime, timedelta
 import requests
@@ -9,32 +9,36 @@ headers = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
-def main(prev_page):
-  print(prev_page)
-  #db에 아무것도 없다면??
-  if False:
-    return init_scraping(get_last_page())
+def main(prev_page):  
+  latest_id = find_latest_cartoon_id()
+
+  if latest_id:
+    page = daily_scraping(prev_page, 688747)
   else:
-    return daily_scraping(prev_page, 688747)
-  
+    page = init_scraping(5)
+    # page = init_scraping(get_last_page())
+  return page  
+
 def init_scraping(last_page):
   page = last_page
-  while True:
-    print(page)
-    time.sleep(1)
-    if page == last_page-5:
-      break
+  flag = True
+  while flag:
     soup_list = get_html(page)
     for soup in reversed(soup_list):
       valid_result = validation(soup)
       if valid_result == 'continue':
-         continue
+        continue
       elif valid_result == 'break':
+        break
+      elif valid_result == 'end':
+        flag = False
         break
       writer_dict, cartoon_dict = soup_to_dict(soup)
       insert_db(writer_dict, cartoon_dict)
     #for end
-    page = page - 1
+    if flag:
+      page = page - 1
+      time.sleep(1)
   #while end
   return page
 
@@ -86,18 +90,15 @@ def get_html(page):
   soup_list = BeautifulSoup(html, 'html.parser').select('tbody > tr.ub-content')
   return soup_list
 
-def validation(soup, latest_id):
+def validation(soup, latest_id=None):
   # 공지 건너뛰기
   id = soup.get('data-no')
   if id == None:
     return 'continue'
-  # 끊기
-  elif latest_id  >= int(id):
-    return 'break'
   
-  #이미 있는거 무시
-  if id <= latest_id:
-    return 'continue'
+  #??
+  if latest_id is not None and latest_id >= int(id):
+    return 'break'
   
   # 만화 게시일 2주 이내
   date_format = '%Y-%m-%d %H:%M:%S'
@@ -105,7 +106,7 @@ def validation(soup, latest_id):
   today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
   is_within_two_weeks = date - today > timedelta(days=-12)
   if is_within_two_weeks:
-    return 'breakz'
+    return 'end'
 
 def soup_to_dict(soup):
   cartoon_id = int(soup.get('data-no'))
@@ -138,8 +139,6 @@ def soup_to_dict(soup):
   return [writer_values, cartoon_values]
 
 def insert_db(writer_value, cartoon_value):
-  print(writer_value, cartoon_value)
-  return 'zz'
-  # writer_object_id = create_writer(writer_value)
-  # cartoon_acknowledged = create_cartoon(writer_object_id, cartoon_value)
-  # return cartoon_acknowledged
+  writer_object_id = create_writer(writer_value)
+  cartoon_acknowledged = create_cartoon(writer_object_id, cartoon_value)
+  #return cartoon_acknowledged
