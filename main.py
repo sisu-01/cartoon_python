@@ -7,7 +7,10 @@ previous_return_value = None
 
 def job():
     global previous_return_value
+    #test
+    previous_return_value = 3
     previous_return_value = main(previous_return_value)
+    print(previous_return_value)
 
 # schedule.every().day.at("23:00").do(job)
 
