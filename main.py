@@ -3,7 +3,13 @@ from scraping.new import main
 import schedule
 import time
 
-# schedule.every().day.at("23:00").do(main)
+previous_return_value = None
+
+def job():
+    global previous_return_value
+    previous_return_value = main(previous_return_value)
+
+# schedule.every().day.at("23:00").do(job)
 
 # while True:
 #     schedule.run_pending()
@@ -27,5 +33,5 @@ def test():
     testwow()
 
 #test()
-main()
+job()
 #onlyClustering()
