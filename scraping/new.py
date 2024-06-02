@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 from utils.mongo import find_latest_cartoon_id, create_writer, create_cartoon
-from utils.test import *
 from datetime import datetime, timedelta
 import requests
 import time
