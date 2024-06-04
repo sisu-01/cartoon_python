@@ -11,7 +11,8 @@ def main(list):
     # 형태소 목록
     documents = []
     for i in list:
-        morphemes = mecab.nouns(i[1])
+        morphemes = mecab.nouns(i['title'])
+        # morphemes = mecab.nouns(i[1])
         morphemes = [morpheme for morpheme in morphemes if morpheme not in exclude_words]
         documents.append(morphemes)
     # 형태소 목록을 문장으로 변환

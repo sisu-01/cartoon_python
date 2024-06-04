@@ -119,18 +119,19 @@ def create_cartoon(writer_object_id, value):
   return result.acknowledged
 
 def find_cartoons(value):
-  cartoons = cartoons.find({ 'id': value['id'], 'nickname': value['nickname'] })
-  return cartoons
+  global cartoons
+  result = cartoons.find({ 'writer_id': value['id'], 'writer_nickname': value['nickname'] })
+  return list(result)
 
 def reset_series(value):
-  reset_series_id = cartoons.updateMany(
-    { 'id': value['id'], 'nickname': value['nickname'] },
+  cartoons_result = cartoons.update_many(
+    { 'writer_id': value['id'], 'writer_nickname': value['nickname'] },
     { '$set': { 'series_id': None }}
   )
-  if reset_series_id.acknowledged:
-    b = cartoons.delete_many({ 'id': value['id'], 'nickname': value['nickname']})
-  
-  return b
+  if cartoons_result.acknowledged:
+    series_result = series.delete_many({ 'id': value['id'], 'nickname': value['nickname']})
+    return series_result.acknowledged
+  return False
 
 def set_series(value, cluster):
   insert = {
@@ -142,6 +143,7 @@ def set_series(value, cluster):
     'last_update': cluster['date'],
     'average': round(cluster['recommend'] / cluster['count'])
   }
-  result = series.insert_one(insert)
-  if result:
-    print(cluster['list'])
+  print(value, cluster)
+  # result = series.insert_one(insert)
+  # if result:
+  # print(cluster['list'])

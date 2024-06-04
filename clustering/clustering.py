@@ -13,17 +13,33 @@ def main(eps, vectors, list):
     for i, label in enumerate(labels):
         if label not in clusters:
             clusters[label] = {
-                'id': list[i][0],
-                'title': list[i][1],
+                'id': list[i]['id'],
+                'title': list[i]['title'],
                 'count': 0,
                 'recommend': 0,
                 'date': '',
                 'list': []
             }
         clusters[label]['count'] += 1
-        clusters[label]['recommend'] += list[i][3]
-        clusters[label]['date'] = str(list[i][2])
-        clusters[label]['list'].append(list[i][0])
+        clusters[label]['recommend'] += list[i]['recommend']
+        clusters[label]['date'] = str(list[i]['date'])
+        clusters[label]['list'].append(list[i]['id'])
+    # 2024 06 04 몽고db로 바꿔서 주석함 ㅎㅎ;
+    # for i, label in enumerate(labels):
+    #     print(list[i])
+    #     if label not in clusters:
+    #         clusters[label] = {
+    #             'id': list[i][0],
+    #             'title': list[i][1],
+    #             'count': 0,
+    #             'recommend': 0,
+    #             'date': '',
+    #             'list': []
+    #         }
+    #     clusters[label]['count'] += 1
+    #     clusters[label]['recommend'] += list[i][3]
+    #     clusters[label]['date'] = str(list[i][2])
+    #     clusters[label]['list'].append(list[i][0])
 
     # # 결과 출력
     # for cluster_id, cluster_data in clusters.items():

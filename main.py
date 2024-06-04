@@ -30,9 +30,13 @@ def onlyClustering():
             group(pool, row)
 
 def test():
-    from utils.mongo import testwow
-    testwow()
+    from clustering.mongo import main
+    a = {
+        'id': 'pota034',
+        'nickname': 'pota'
+    }
+    main(a)
 
-#test()
-job()
+test()
+#job()
 #onlyClustering()

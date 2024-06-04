@@ -11,11 +11,11 @@ def main(value):
     cartoons = find_cartoons(value)
     if len(cartoons) >= 2:
       # 형태소 분리
-      data = pre_processing(list)
+      data = pre_processing(cartoons)
       # 벡터화
       vectors = vectorization(data)
       # 군집화
-      result = clustering(eps, vectors, list)
+      result = clustering(eps, vectors, cartoons)
 
       reset_result = reset_series(value)
       if reset_result:
@@ -24,4 +24,4 @@ def main(value):
             continue
           set_series(value, result[i])
   except Exception as e:
-    print(e)
+    print('tq', e)
