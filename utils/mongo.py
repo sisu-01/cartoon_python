@@ -99,7 +99,7 @@ def fix_nik_writer(value):
           'nickname': value['nickname'],
           'date': value['date'],
       }
-      latest_field['nickname_history'].insert(0, new_entry)
+      set_value['nickname_history'] = [new_entry] + latest_field['nickname_history']
 
     writers.update_one(
       { 'id': value['id'] },
