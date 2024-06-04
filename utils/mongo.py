@@ -117,3 +117,31 @@ def create_cartoon(writer_object_id, value):
   value['writer_object_id'] = writer_object_id
   result = cartoons.insert_one(value)
   return result.acknowledged
+
+def find_cartoons(value):
+  cartoons = cartoons.find({ 'id': value['id'], 'nickname': value['nickname'] })
+  return cartoons
+
+def reset_series(value):
+  reset_series_id = cartoons.updateMany(
+    { 'id': value['id'], 'nickname': value['nickname'] },
+    { '$set': { 'series_id': None }}
+  )
+  if reset_series_id.acknowledged:
+    b = cartoons.delete_many({ 'id': value['id'], 'nickname': value['nickname']})
+  
+  return b
+
+def set_series(value, cluster):
+  insert = {
+    'id': cluster['id'],
+    'title': cluster['title'],
+    'writer_id': value['id'],
+    'writer_nickname': value['nickname'],
+    'count': cluster['count'],
+    'last_update': cluster['date'],
+    'average': round(cluster['recommend'] / cluster['count'])
+  }
+  result = series.insert_one(insert)
+  if result:
+    print(cluster['list'])
