@@ -131,6 +131,7 @@ def soup_to_dict(soup):
     'writer_object_id': None,
     'writer_id': writer_id,
     'writer_nickname': writer_nickname,
+    'series_id': None,
   }
   return [writer_values, cartoon_values]
 
