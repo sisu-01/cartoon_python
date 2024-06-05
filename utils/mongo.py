@@ -119,7 +119,6 @@ def create_cartoon(writer_object_id, value):
   return result.acknowledged
 
 def find_cartoons(value):
-  global cartoons
   result = cartoons.find({ 'writer_id': value['id'], 'writer_nickname': value['nickname'] })
   return list(result)
 
@@ -133,17 +132,24 @@ def reset_series(value):
     return series_result.acknowledged
   return False
 
-def set_series(value, cluster):
+def set_series(cluster):
   insert = {
     'id': cluster['id'],
     'title': cluster['title'],
-    'writer_id': value['id'],
-    'writer_nickname': value['nickname'],
+    'writer_id': cluster['writer_id'],
+    'writer_nickname': cluster['writer_nickname'],
     'count': cluster['count'],
     'last_update': cluster['date'],
     'average': round(cluster['recommend'] / cluster['count'])
   }
-  print(value, cluster)
-  # result = series.insert_one(insert)
-  # if result:
-  # print(cluster['list'])
+  insert_result = series.insert_one(insert)
+  if insert_result.acknowledged:
+    id_list = cluster['list']
+    query = {'id': {'$in': id_list}}
+    update_field = {'$set': {'series_id': cluster['id']}}
+    update_result = cartoons.update_many(query, update_field)
+
+def only_mongo():
+  projection = {'_id': 0, 'id': 1, 'nickname': 1, 'nickname_history': 1}
+  result = writers.find({}, projection)
+  return list(result)

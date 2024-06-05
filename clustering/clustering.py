@@ -20,6 +20,9 @@ def main(eps, vectors, list):
                 'date': '',
                 'list': []
             }
+        clusters[label]['writer_object_id'] = list[i]['writer_object_id']
+        clusters[label]['writer_id'] = list[i]['writer_id']
+        clusters[label]['writer_nickname'] = list[i]['writer_nickname']
         clusters[label]['count'] += 1
         clusters[label]['recommend'] += list[i]['recommend']
         clusters[label]['date'] = str(list[i]['date'])
