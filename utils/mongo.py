@@ -128,7 +128,7 @@ def reset_series(value):
     { '$set': { 'series_id': None }}
   )
   if cartoons_result.acknowledged:
-    series_result = series.delete_many({ 'id': value['id'], 'nickname': value['nickname']})
+    series_result = series.delete_many({ 'writer_id': value['id'], 'writer_nickname': value['nickname']})
     return series_result.acknowledged
   return False
 
