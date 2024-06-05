@@ -132,21 +132,21 @@ def reset_series(value):
     return series_result.acknowledged
   return False
 
-def set_series(cluster):
+def set_series(value):
   insert = {
-    'id': cluster['id'],
-    'title': cluster['title'],
-    'writer_id': cluster['writer_id'],
-    'writer_nickname': cluster['writer_nickname'],
-    'count': cluster['count'],
-    'last_update': cluster['date'],
-    'average': round(cluster['recommend'] / cluster['count'])
+    'id': value['id'],
+    'title': value['title'],
+    'writer_id': value['writer_id'],
+    'writer_nickname': value['writer_nickname'],
+    'count': value['count'],
+    'last_update': value['date'],
+    'average': round(value['recommend'] / value['count'])
   }
   insert_result = series.insert_one(insert)
   if insert_result.acknowledged:
-    id_list = cluster['list']
+    id_list = value['list']
     query = {'id': {'$in': id_list}}
-    update_field = {'$set': {'series_id': cluster['id']}}
+    update_field = {'$set': {'series_id': value['id']}}
     update_result = cartoons.update_many(query, update_field)
 
 def only_mongo():
