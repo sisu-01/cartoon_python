@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from utils.mongo import find_latest_cartoon_id, create_writer, create_cartoon
 from datetime import datetime, timedelta
-from clustering.app import main as clustering
+from clustering.mongo import main as clustering
 import requests
 import time
 
@@ -11,12 +11,10 @@ headers = {
 
 def main(prev_page):
   latest_id = find_latest_cartoon_id()
-
   if latest_id:
     page = daily_scraping(prev_page, int(latest_id['id']))
   else:
     page = init_scraping(get_last_page())
-    
   return page  
 
 def init_scraping(last_page):
@@ -35,6 +33,7 @@ def init_scraping(last_page):
       insert_db(writer_dict, cartoon_dict)
     #for end
     if flag:
+      print(page)
       page = page - 1
       time.sleep(1)
   #while end
@@ -64,6 +63,7 @@ def daily_scraping(prev_page, latest_id):
       insert_db(writer_dict, cartoon_dict)
     #for end
     if flag:
+      print(page)
       page = page - 1
       soup_list = get_html(page)
       time.sleep(1)
@@ -139,9 +139,8 @@ def insert_db(writer_value, cartoon_value):
   writer_object_id = create_writer(writer_value)
   if writer_object_id:
     cartoon_acknowledged = create_cartoon(writer_object_id, cartoon_value)
-    if cartoon_acknowledged:
-      is_anon = writer_value['id'] == 'a'
-      is_anon_nick = writer_value['nickname'] == 'ㅇㅇ' or writer_value['nickname'] == '카갤러'
-      if not (is_anon and is_anon_nick):
-        clustering((writer_value['id'], writer_value['nickname']))
-  #return cartoon_acknowledged
+    # if cartoon_acknowledged:
+    #   is_anon = writer_value['id'] == 'a'
+    #   is_anon_nick = writer_value['nickname'] == 'ㅇㅇ' or writer_value['nickname'] == '카갤러'
+    #   if not (is_anon and is_anon_nick):
+    #     clustering(writer_value)
