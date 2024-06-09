@@ -123,14 +123,8 @@ def find_cartoons(value):
   return list(result)
 
 def reset_series(value):
-  cartoons_result = cartoons.update_many(
-    { 'writer_id': value['id'], 'writer_nickname': value['nickname'] },
-    { '$set': { 'series_id': None }}
-  )
-  if cartoons_result.acknowledged:
-    series_result = series.delete_many({ 'writer_id': value['id'], 'writer_nickname': value['nickname']})
-    return series_result.acknowledged
-  return False
+  series_result = series.delete_many({ 'writer_id': value['id'], 'writer_nickname': value['nickname']})
+  return series_result.acknowledged
 
 def set_series(value):
   insert = {
@@ -140,16 +134,12 @@ def set_series(value):
     'writer_nickname': value['writer_nickname'],
     'count': value['count'],
     'last_update': value['date'],
-    'average': round(value['recommend'] / value['count'])
+    'average': round(value['recommend'] / value['count']),
+    'cartoons_id_list': value['list']
   }
-  insert_result = series.insert_one(insert)
-  if insert_result.acknowledged:
-    id_list = value['list']
-    query = {'id': {'$in': id_list}}
-    update_field = {'$set': {'series_id': value['id']}}
-    update_result = cartoons.update_many(query, update_field)
+  series.insert_one(insert)
 
 def only_mongo():
   projection = {'_id': 0, 'id': 1, 'nickname': 1, 'nickname_history': 1}
-  result = writers.find({}, projection)
+  result = writers.find({}, projection).limit(30)
   return list(result)
