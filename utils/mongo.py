@@ -145,3 +145,18 @@ def only_mongo():
   projection = {'_id': 0, 'id': 1, 'nickname': 1, 'nickname_history': 1}
   result = writers.find({}, projection).limit(30)
   return list(result)
+
+def sandbox():
+  result = writers.update_many(
+    {
+        "nickname": {"$exists": False},  # "nickname" 필드가 존재하지 않는 도큐먼트
+    },
+    [
+        {
+            "$set": {
+                "nickname": {"$arrayElemAt": ["$nickname_history.nickname", 0]}
+            }
+        }
+    ]
+  )
+  return result
