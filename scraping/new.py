@@ -116,6 +116,7 @@ def soup_to_dict(soup):
     writer_nickname = temp_nickname.text.strip()
   date = soup.select_one('.gall_date').get('title')
   recommend = int(soup.select_one('.gall_recommend').text)
+  og_image = get_og_image(cartoon_id)
 
   writer_values = {
     'id': writer_id,
@@ -131,9 +132,15 @@ def soup_to_dict(soup):
     'writer_object_id': None,
     'writer_id': writer_id,
     'writer_nickname': writer_nickname,
-    'series_id': None,
+    'og_image': og_image,
   }
   return [writer_values, cartoon_values]
+
+def get_og_image(cartoon_id):
+  url = f'https://gall.dcinside.com/board/view/?id=cartoon&no={cartoon_id}'
+  res = requests.get(url, headers=headers).text
+  og_image  = BeautifulSoup(res, 'html.parser').find('meta', property='og:image')
+  return og_image['content']
 
 def insert_db(writer_value, cartoon_value):
   writer_object_id = create_writer(writer_value)
