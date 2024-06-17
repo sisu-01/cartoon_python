@@ -70,6 +70,7 @@ def fix_nik_writer(value):
   if latest_field == None:
     insert = {
       'id': value['id'],
+      'nickname': value['nickname'],
       'nickname_history': [{
         'nickname': value['nickname'],
         'date': value['date'],
@@ -99,6 +100,7 @@ def fix_nik_writer(value):
           'nickname': value['nickname'],
           'date': value['date'],
       }
+      set_value['nickname'] = value['nickname']
       set_value['nickname_history'] = [new_entry] + latest_field['nickname_history']
 
     writers.update_one(
