@@ -8,6 +8,7 @@ previous_return_value = None
 def job():
   global previous_return_value
   previous_return_value = main(previous_return_value)
+  print('마무리는', previous_return_value)
 
 schedule.every().day.at("23:00").do(job)
 
@@ -50,3 +51,12 @@ def only_clustering_mongo():
 #job()
 #onlyClustering()
 #only_clustering_mongo()
+
+from scraping.new import get_og_image
+from utils.mongo import create_og_image, update_image
+a = create_og_image()
+for i in a:
+  og_image = get_og_image(i['id'])
+  if og_image == False:
+    continue
+  update_image(i['id'], og_image)

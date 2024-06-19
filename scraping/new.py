@@ -137,10 +137,36 @@ def soup_to_dict(soup):
   return [writer_values, cartoon_values]
 
 def get_og_image(cartoon_id):
+  time.sleep(1)
   url = f'https://gall.dcinside.com/board/view/?id=cartoon&no={cartoon_id}'
-  res = requests.get(url, headers=headers).text
-  og_image  = BeautifulSoup(res, 'html.parser').find('meta', property='og:image')
-  return og_image['content']
+  max_retries = 3
+  retries = 0
+  while(True):
+    if retries >= max_retries:
+      #실제로는 ""만,
+      return False
+    try:
+      response = requests.get(url, headers=headers)
+      response.raise_for_status()  # Status Code가 400이나 500대면 예외 발생
+      res = response.text
+      if res.strip():
+        soup  = BeautifulSoup(res, 'html.parser')
+        og_image = soup.find('meta', property='og:image')
+        if og_image:
+          ###
+          import random
+          if random.random() < 0.01:  # 10% 확률로 출력
+            print(cartoon_id, '\n', og_image['content'])
+          ###
+          return og_image['content']
+        else:
+          print(cartoon_id, 'No og:image meta tag found, retrying...')
+      else:
+        print(cartoon_id, 'Empty response, retrying...')
+    except requests.exceptions.RequestException as e:
+      print(f"Request failed for cartoon_id {cartoon_id}: {e}")
+    time.sleep(5)
+    retries += 1
 
 def insert_db(writer_value, cartoon_value):
   writer_object_id = create_writer(writer_value)

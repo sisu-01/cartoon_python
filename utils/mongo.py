@@ -141,12 +141,14 @@ def set_series(value):
   }
   series.insert_one(insert)
 
+#클러스터링만
 def only_mongo():
   projection = {'_id': 0, 'id': 1, 'nickname': 1, 'nickname_history': 1}
   result = writers.find({}, projection).limit(30)
   return list(result)
 
-def sandbox():
+#nickname 없는 고닉들 추가
+def create_nickname():
   result = writers.update_many(
     {
         "nickname": {"$exists": False},  # "nickname" 필드가 존재하지 않는 도큐먼트
@@ -160,3 +162,30 @@ def sandbox():
     ]
   )
   return result
+
+#series_id null인 애들 지워
+def delete_series_id():
+  # series_id 필드를 제거하는 작업을 수행할 쿼리
+  filter_query = {"series_id": {"$exists": True}}  # series_id 필드가 존재하는 문서들을 대상으로 합니다.
+  update_query = {"$unset": {"series_id": ""}}  # series_id 필드를 제거하는 업데이트 연산
+
+  # update_many()를 사용하여 모든 해당 문서들에 대해 제거 작업을 수행합니다.
+  result = cartoons.update_many(filter_query, update_query)
+
+#og:image 싹 추가
+def create_og_image():
+  filter_query = {
+    "og_image": {"$exists": False},
+    "writer_nickname": {"$nin": ["괴도흥부", "아이오에우", "행쑨", "아래하", "류ㅎ", "삼식이"]}
+  }
+  projection = {'_id': -1, 'id': 1}
+  result = cartoons.find(filter_query, projection).sort({'_id': 1})
+  return list(result)
+
+def update_image(cartoon_id, og_image):
+  # 업데이트할 필드와 값을 설정합니다.
+  filter_query = {"id": cartoon_id}  # id가 cartoon_id인 문서를 대상으로 합니다.
+  update_query = {"$set": {"og_image": og_image}}  # og_image 필드를 추가하는 업데이트 연산
+
+  # update_one()을 사용하여 해당 문서에 대해 업데이트 작업을 수행합니다.
+  cartoons.update_one(filter_query, update_query)
