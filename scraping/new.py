@@ -144,7 +144,7 @@ def get_og_image(cartoon_id):
   while(True):
     if retries >= max_retries:
       #실제로는 ""만,
-      return False
+      return None
     try:
       response = requests.get(url, headers=headers)
       response.raise_for_status()  # Status Code가 400이나 500대면 예외 발생
@@ -154,9 +154,9 @@ def get_og_image(cartoon_id):
         og_image = soup.find('meta', property='og:image')
         if og_image:
           ###
-          import random
-          if random.random() < 0.01:  # 10% 확률로 출력
-            print(cartoon_id, '\n', og_image['content'])
+          # import random
+          # if random.random() < 0.01:  # 10% 확률로 출력
+          #   print(cartoon_id, '\n', og_image['content'])
           ###
           return og_image['content']
         else:
