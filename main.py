@@ -1,4 +1,4 @@
-#from scraping.scraping import main
+from scraping.scraping import main as rdbms
 from scraping.new import main
 import schedule
 import time
@@ -8,7 +8,7 @@ previous_return_value = None
 def job():
   global previous_return_value
   previous_return_value = main(previous_return_value)
-  print('마무리는', previous_return_value)
+  rdbms()
 
 schedule.every().day.at("23:00").do(job)
 
