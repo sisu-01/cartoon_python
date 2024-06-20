@@ -1,12 +1,12 @@
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
-#import certifi
+import certifi
 
 load_dotenv()
 uri = os.getenv("URI")
-#client = MongoClient(uri, tlsCAFile=certifi.where())
-client = MongoClient(uri, tls=True, tlsInsecure=True)
+client = MongoClient(uri, tlsCAFile=certifi.where())
+
 db = client['cartoon']
 cartoons = db['cartoons']
 writers = db['writers']

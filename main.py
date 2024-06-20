@@ -10,7 +10,7 @@ def job():
   previous_return_value = main(previous_return_value)
   rdbms()
 
-schedule.every().day.at("23:00").do(job)
+schedule.every().day.at("22:41").do(job)
 
 while True:
     schedule.run_pending()
