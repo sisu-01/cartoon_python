@@ -24,3 +24,6 @@ while True:
 
 # from utils.sandbox import only_clustering_mongo
 # only_clustering_mongo()
+
+# from utils.mongo import sandbox
+# sandbox()
