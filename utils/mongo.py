@@ -137,14 +137,15 @@ def set_series(value):
     'count': value['count'],
     'last_update': value['date'],
     'average': round(value['recommend'] / value['count']),
-    'cartoons_id_list': value['list']
+    'cartoons_id_list': value['list'],
+    'og_image': value['og_image'],
   }
   series.insert_one(insert)
 
 #클러스터링만
 def only_mongo():
   projection = {'_id': 0, 'id': 1, 'nickname': 1, 'nickname_history': 1}
-  result = writers.find({}, projection).limit(30)
+  result = writers.find({'nickname': '군게'}, projection).limit(30)
   return list(result)
 
 #nickname 없는 고닉들 추가

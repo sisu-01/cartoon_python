@@ -18,7 +18,8 @@ def main(eps, vectors, list):
                 'count': 0,
                 'recommend': 0,
                 'date': '',
-                'list': []
+                'list': [],
+                'og_image': list[i]['og_image'],
             }
         clusters[label]['writer_object_id'] = list[i]['writer_object_id']
         clusters[label]['writer_id'] = list[i]['writer_id']
