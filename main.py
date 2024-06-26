@@ -4,14 +4,11 @@ import schedule
 import time
 
 previous_return_value = None
-
 def job():
   global previous_return_value
   previous_return_value = main(previous_return_value)
   rdbms()
-
-schedule.every().day.at("22:41").do(job)
-
+schedule.every().day.at("23:00").do(job)
 while True:
     schedule.run_pending()
     time.sleep(1)
@@ -25,4 +22,5 @@ while True:
 #     continue
 #   update_image(i['id'], og_image)
 
+# from utils.sandbox import only_clustering_mongo
 # only_clustering_mongo()

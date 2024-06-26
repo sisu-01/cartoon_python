@@ -2,7 +2,6 @@ from utils.mongo import find_cartoons, reset_series, set_series
 from clustering.preprocessing import main as pre_processing
 from clustering.vectorization import main as vectorization
 from clustering.clustering import main as clustering
-import traceback
 
 eps = 0.16
 
