@@ -121,11 +121,11 @@ def create_cartoon(writer_object_id, value):
   return result.acknowledged
 
 def find_cartoons(value):
-  result = cartoons.find({ 'writer_id': value['id'], 'writer_nickname': value['nickname'] })
+  result = cartoons.find(value).sort({'_id': 1})
   return list(result)
 
 def reset_series(value):
-  series_result = series.delete_many({ 'writer_id': value['id'], 'writer_nickname': value['nickname']})
+  series_result = series.delete_many(value)
   return series_result.acknowledged
 
 def set_series(value):
@@ -144,8 +144,8 @@ def set_series(value):
 
 #클러스터링만
 def only_mongo():
-  projection = {'_id': 0, 'id': 1, 'nickname': 1, 'nickname_history': 1}
-  result = writers.find({}, projection).limit(30)
+  projection = {'_id': 0, 'id': 1, 'nickname': 1}
+  result = writers.find({'id': 'qwerbnm12'}, projection)#.limit(30)
   return list(result)
 
 #nickname 없는 고닉들 추가
@@ -177,7 +177,7 @@ def delete_series_id():
 def create_og_image():
   filter_query = {
     "og_image": {"$exists": False},
-    "writer_nickname": {"$nin": ["괴도흥부", "아이오에우", "행쑨", "아래하", "류ㅎ", "삼식이"]}
+    #"writer_nickname": {"$nin": ["아이오에우"]}
   }
   projection = {'_id': -1, 'id': 1}
   result = cartoons.find(filter_query, projection).sort({'_id': 1})
@@ -190,3 +190,6 @@ def update_image(cartoon_id, og_image):
 
   # update_one()을 사용하여 해당 문서에 대해 업데이트 작업을 수행합니다.
   cartoons.update_one(filter_query, update_query)
+
+def sandbox():
+  cartoons.delete_many({"writer_id": 'color32639'})

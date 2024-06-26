@@ -19,13 +19,13 @@ def only_clustering_mongo():
   writers = only_mongo()
   for i in writers:
     print(i)
-    value = {}
     if i['id'] == 'a':
       if i['nickname'] != 'ㅇㅇ' and i['nickname'] != '카갤러':
-        main(i)
+        main({
+          'writer_id': 'a',
+          'writer_nickname': i['nickname'],
+        })
     else:
-      value = {
-        'id': i['id'],
-        'nickname': i['nickname_history'][0]['nickname']
-      }
-      main(value)
+      main({
+        'writer_id': i['id']
+      })
