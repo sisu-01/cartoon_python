@@ -173,7 +173,13 @@ def insert_db(writer_value, cartoon_value):
   if writer_object_id:
     cartoon_acknowledged = create_cartoon(writer_object_id, cartoon_value)
     if cartoon_acknowledged:
-      is_anon = writer_value['id'] == 'a'
-      is_anon_nick = writer_value['nickname'] == 'ㅇㅇ' or writer_value['nickname'] == '카갤러'
-      if not (is_anon and is_anon_nick):
-        clustering(writer_value)
+      if writer_value['id'] == 'a':
+        if writer_value['nickname'] != 'ㅇㅇ' and writer_value['nickname'] != '카갤러':
+          clustering({
+            'writer_id': writer_value['id'],
+            'writer_nickname': writer_value['nickname'],
+          })
+      else:
+        clustering({
+          'writer_id': writer_value['id']
+        })
