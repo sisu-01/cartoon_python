@@ -41,6 +41,9 @@ def set_series(connection_pool, id_nickname, values):
         )
         run_sql(connection_pool, update_sql, [values['id']]+values["list"])
 
+import traceback
+
+
 def main(connection_pool, id_nickname):
     try:
         eps = 0.16
@@ -65,7 +68,10 @@ def main(connection_pool, id_nickname):
                         continue
                     set_series(connection_pool, id_nickname, result[i])
     except Exception as e:
-        print(e)
+        print('clustering.app main() encountered an error:')
+        print('Error message:', e)
+        print('Traceback:')
+        traceback.print_exc()
 
 """
 class 어쩌구():
