@@ -1,21 +1,15 @@
-#.env 읽기
 python-dotenv
 
-# db
 mysql-connector-python
 
-#몽고
 pymongo
 certifi
 
-# clustering
 python-mecab-ko
 scikit-learn
 matplotlib
 
-# scraping
 requests
 beautifulsoup4
 
-# scheduling
 schedule
