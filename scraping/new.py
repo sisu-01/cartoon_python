@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from clustering.mongo import main as clustering
 import requests
 import time
+import re
 
 headers = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -15,7 +16,7 @@ def main(prev_page):
     page = daily_scraping(prev_page, int(latest_id['id']))
   else:
     page = init_scraping(get_last_page())
-  return page  
+  return page
 
 def init_scraping(last_page):
   page = last_page
@@ -116,14 +117,18 @@ def soup_to_dict(soup):
     writer_nickname = temp_nickname.text.strip()
   date = soup.select_one('.gall_date').get('title')
   recommend = int(soup.select_one('.gall_recommend').text)
-  og_image = get_og_image(cartoon_id)
+  detail_soup = get_detail_soup(cartoon_id)
+  og_image = get_og_image(detail_soup)
+  urls = get_urls(detail_soup)
 
-  writer_values = {
+  temp_writer_values = {
     'id': writer_id,
     'nickname': writer_nickname,
     'date': date,
     'recommend': recommend,
   }
+  writer_values = merge_urls_and_writer_values(urls, temp_writer_values)
+
   cartoon_values = {
     'id': cartoon_id,
     'title': title,
@@ -136,14 +141,13 @@ def soup_to_dict(soup):
   }
   return [writer_values, cartoon_values]
 
-def get_og_image(cartoon_id):
+def get_detail_soup(cartoon_id):
   time.sleep(1)
   url = f'https://gall.dcinside.com/board/view/?id=cartoon&no={cartoon_id}'
   max_retries = 3
   retries = 0
   while(True):
     if retries >= max_retries:
-      #실제로는 ""만,
       return None
     try:
       response = requests.get(url, headers=headers)
@@ -151,22 +155,93 @@ def get_og_image(cartoon_id):
       res = response.text
       if res.strip():
         soup  = BeautifulSoup(res, 'html.parser')
-        og_image = soup.find('meta', property='og:image')
-        if og_image:
-          ###
-          # import random
-          # if random.random() < 0.01:  # 10% 확률로 출력
-          #   print(cartoon_id, '\n', og_image['content'])
-          ###
-          return og_image['content']
+        if soup:
+          return soup
         else:
-          print(cartoon_id, 'No og:image meta tag found, retrying...')
+          print(cartoon_id, 'No soup, retrying...')
       else:
         print(cartoon_id, 'Empty response, retrying...')
     except requests.exceptions.RequestException as e:
       print(f"Request failed for cartoon_id {cartoon_id}: {e}")
     time.sleep(5)
     retries += 1
+
+# def get_og_image(cartoon_id):
+#   time.sleep(1)
+#   url = f'https://gall.dcinside.com/board/view/?id=cartoon&no={cartoon_id}'
+#   max_retries = 3
+#   retries = 0
+#   while(True):
+#     if retries >= max_retries:
+#       #실제로는 ""만,
+#       return None
+#     try:
+#       response = requests.get(url, headers=headers)
+#       response.raise_for_status()  # Status Code가 400이나 500대면 예외 발생
+#       res = response.text
+#       if res.strip():
+#         soup  = BeautifulSoup(res, 'html.parser')
+#         og_image = soup.find('meta', property='og:image')
+#         if og_image:
+#           ###
+#           # import random
+#           # if random.random() < 0.01:  # 10% 확률로 출력
+#           #   print(cartoon_id, '\n', og_image['content'])
+#           ###
+#           return og_image['content']
+#         else:
+#           print(cartoon_id, 'No og:image meta tag found, retrying...')
+#       else:
+#         print(cartoon_id, 'Empty response, retrying...')
+#     except requests.exceptions.RequestException as e:
+#       print(f"Request failed for cartoon_id {cartoon_id}: {e}")
+#     time.sleep(5)
+#     retries += 1
+
+def get_og_image(soup):
+  og_image = soup.find('meta', property='og:image')
+  if og_image:
+    return og_image['content']
+  else:
+    return None
+
+# 허용할 URL 패턴과 키
+pattern_to_key = {
+    re.compile(r'm\.blog\.naver\.com'): 'naver',
+    re.compile(r'blog\.naver\.com'): 'naver',
+    re.compile(r'pixiv\.net/users'): 'pixiv',
+    re.compile(r'x\.com'): 'x',
+    re.compile(r'twitter\.com'): 'x'
+}
+def get_urls(soup):
+  # 결과를 담을 dict (초기에는 빈 dict)
+  result = {}
+  view_box_div = soup.find('div', class_='writing_view_box')
+  if view_box_div:
+    a_tags = view_box_div.find_all('a')
+    for a in a_tags:
+      if 'href' in a.attrs:
+        href = a['href']
+        for pattern, key in pattern_to_key.items():
+          if pattern.search(href):
+            result[key] = href
+            break
+  if result:
+    # 만약 result에 데이터가 있다면
+    return result
+  else:
+    # result가 비어있다면 False 반환
+    return False
+  
+def merge_urls_and_writer_values(urls, writer_values):
+  if writer_values.get('id') == "a":
+    return writer_values
+  if urls:
+    urls.update(writer_values)
+    return urls
+  else:
+    return writer_values
+
 
 def insert_db(writer_value, cartoon_value):
   writer_object_id = create_writer(writer_value)

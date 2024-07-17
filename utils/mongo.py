@@ -67,6 +67,7 @@ def anony_writer(value):
 
 def fix_nik_writer(value):
   latest_field = writers.find_one({ "id" : value["id"] })
+  additional_keys = ['naver', 'pixiv', 'x']
   if latest_field == None:
     insert = {
       'id': value['id'],
@@ -81,6 +82,9 @@ def fix_nik_writer(value):
       'recommend': value['recommend'],
       'average': value['recommend'],
     }
+    for key in additional_keys:
+      if key in value:
+          insert[key] = value[key]
     result = writers.insert_one(insert)
     return result.inserted_id
   else:
@@ -102,6 +106,10 @@ def fix_nik_writer(value):
       }
       set_value['nickname'] = value['nickname']
       set_value['nickname_history'] = [new_entry] + latest_field['nickname_history']
+    
+    for key in additional_keys:
+      if key in value:
+          set_value[key] = value[key]
 
     writers.update_one(
       { 'id': value['id'] },
@@ -191,5 +199,12 @@ def update_image(cartoon_id, og_image):
   # update_one()을 사용하여 해당 문서에 대해 업데이트 작업을 수행합니다.
   cartoons.update_one(filter_query, update_query)
 
-def sandbox():
-  cartoons.delete_many({"writer_id": 'color32639'})
+# def update_urls(idd, value):
+#   set_value = {k: v for k, v in value.items() if v is not None}
+
+#   test.update_one(
+#     { 'id': idd },
+#     {
+#       "$set": set_value,
+#     }
+#   )
