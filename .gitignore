@@ -3,3 +3,4 @@ config/*
 *.pyc
 *.env
 __pycache__
+test.py
