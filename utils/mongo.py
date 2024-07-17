@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, errors
 from dotenv import load_dotenv
 import os
 import certifi
@@ -199,12 +199,37 @@ def update_image(cartoon_id, og_image):
   # update_one()을 사용하여 해당 문서에 대해 업데이트 작업을 수행합니다.
   cartoons.update_one(filter_query, update_query)
 
-# def update_urls(idd, value):
-#   set_value = {k: v for k, v in value.items() if v is not None}
-
-#   test.update_one(
-#     { 'id': idd },
-#     {
-#       "$set": set_value,
-#     }
-#   )
+"""
+urls 뜯기
+"""
+def get_all_writers():
+  projection = {'_id': 0, 'id': 1, 'nickname': 1}
+  query = {'id': {'$ne': 'a'}, 'temp': {'$exists': False}}
+  result = writers.find(query, projection).sort({'_id': 1})
+  writer_ids = list(result)
+  return writer_ids
+def get_recent_cartoon(writer_id):
+  projection = {'_id': 0, 'id': 1}
+  query = {'writer_id': writer_id}
+  try:
+    result = cartoons.find_one(query, sort=[('_id', -1)], projection=projection)
+    if result is not None:
+      writers.update_one(
+        {'id': writer_id},
+        {
+          "$set": {'temp': 1}
+        }
+      )
+      return result
+    else:
+      return False
+  except errors.PyMongoError as e:
+    print(f"An error occurred: {e}")
+    return False
+def update_urls(idd, value):
+  writers.update_one(
+    { 'id': idd },
+    {
+      "$set": value,
+    }
+  )

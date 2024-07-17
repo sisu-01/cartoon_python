@@ -29,3 +29,16 @@ def only_clustering_mongo():
       main({
         'writer_id': i['id']
       })
+
+from utils.mongo import get_all_writers, get_recent_cartoon, update_urls
+from scraping.new import get_detail_soup, get_urls
+
+def get_urls_from_writer_s_recent_cartoon():
+  writers = get_all_writers()
+  for i in writers:
+    cartoon = get_recent_cartoon(i['id'])
+    detail_soup = get_detail_soup(cartoon['id'])
+    urls = get_urls(detail_soup)
+    if urls:
+      print(i['id'], i['nickname'])
+      update_urls(i['id'], urls)
