@@ -13,3 +13,5 @@ requests
 beautifulsoup4
 
 schedule
+
+python-telegram-bot
