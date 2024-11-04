@@ -1,6 +1,6 @@
 from scraping.scraping import main as mysql
 from scraping.new import main as mongo
-from telegram import send_sync_message
+from utils.telegram import send_sync_message
 import schedule
 import time
 
