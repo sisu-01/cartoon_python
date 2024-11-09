@@ -1,6 +1,6 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-def vectorization(data):
+def main(data):
     try:
         # TF-IDF 행렬 생성
         # min_df 용어가 어휘에 포함되기 위해 출현해야 하는 최소 문서 수
