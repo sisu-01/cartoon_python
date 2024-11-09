@@ -59,6 +59,8 @@ def main(connection_pool, id_nickname):
             data = pre_processing(list)
             # 벡터화
             vectors = vectorization(data)
+            if vectors == None:
+                return False
             # 군집화
             result = clustering(eps, vectors, list)
 
@@ -68,9 +70,9 @@ def main(connection_pool, id_nickname):
                         continue
                     set_series(connection_pool, id_nickname, result[i])
     except Exception as e:
-        print('clustering.app main() encountered an error:')
-        print('Error message:', e)
-        print('Traceback:')
+        print('클러스터링.앱 main() encountered an error:')
+        print('에러 미시지:', e)
+        print('Traceback추적:')
         traceback.print_exc()
 
 """

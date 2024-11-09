@@ -14,6 +14,8 @@ def main(value):
       data = pre_processing(cartoons)
       # 벡터화
       vectors = vectorization(data)
+      if vectors == None:
+        return False
       # 군집화
       result = clustering(eps, vectors, cartoons)
 
@@ -24,7 +26,7 @@ def main(value):
             continue
           set_series(result[i])
   except Exception as e:
-    print(e)
-    # print('예외 유형:', type(e))  # 예외의 유형을 출력
-    # print('예외 메시지:', e)  # 기본적인 예외 메시지를 출력
-    # print('예외의 세부 정보:', e.args)  # 예외 메시지의 세부 정보
+    #print(e)
+    print('예외 유형:', type(e))  # 예외의 유형을 출력
+    print('예외 메시지:', e)  # 기본적인 예외 메시지를 출력
+    print('예외의 세부 정보:', e.args)  # 예외 메시지의 세부 정보
