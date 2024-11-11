@@ -11,9 +11,11 @@ def job():
   try:
     previous_return_value = mongo(previous_return_value)
     mysql()
+    print('1. 성공했다이')
     success_message = f'Job success\nprevious_return_value: {str(previous_return_value)}'
     send_sync_message(success_message)
   except Exception as e:
+    print('2. 실패했다이')
     error_message = f"Job error: {str(e)}"
     send_sync_message(error_message)
 
