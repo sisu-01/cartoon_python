@@ -18,13 +18,13 @@ DEFAULT_MSG = "msg 변수가 비어이따"
 async def send_message(msg, retries=3, delay=5):
     for attempt in range(retries):
         try:
-            await bot.send_message(chat_id=my_id, text=msg, timeout=10)  # 타임아웃 설정
+            await bot.send_message(chat_id=my_id, text=msg)  # 타임아웃 설정
             break  # 성공하면 반복 종료
         except Exception as e:
             if attempt < retries - 1:
                 time.sleep(delay)  # 지연 후 재시도
             else:
-                print('에러 흑흑')
+                print(f'telegram error: {str(e)}')
 
 def send_sync_message(msg=None):
     try:
