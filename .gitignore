@@ -1,4 +1,5 @@
 config/*
+logs/*
 .idea
 *.pyc
 *.env
