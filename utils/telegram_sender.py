@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from telegram import Bot
 from telegram.constants import ParseMode
 from telegram.error import TelegramError
+from telegram.request import AiohttpSession
+import aiohttp
 
 # 환경 변수 로드
 load_dotenv()
@@ -13,7 +15,6 @@ load_dotenv()
 my_id = os.getenv('ID')
 token = os.getenv('TOKEN')
 # Bot 인스턴스 생성
-bot = Bot(token=token)
 
 # 기본 메시지 설정
 DEFAULT_MSG = "msg 변수가 비어이따"
@@ -21,7 +22,10 @@ DEFAULT_MSG = "msg 변수가 비어이따"
 async def send_message(msg, retries=3, delay=5):
     for attempt in range(retries):
         try:
-            await bot.send_message(chat_id=my_id, text=msg, parse_mode=ParseMode.HTML)
+            # 세션과 Bot 객체를 매번 새로 생성하고, 명시적으로 닫아줌
+            async with aiohttp.ClientSession() as session:
+                bot = Bot(token=token, request=AiohttpSession(session))
+                await bot.send_message(chat_id=my_id, text=msg, parse_mode=ParseMode.HTML)
             break  # 성공하면 반복 종료
         except TelegramError as e:
             if attempt < retries - 1:
