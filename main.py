@@ -1,6 +1,6 @@
 from scraping.scraping import main as mysql
 from scraping.new import main as mongo
-from utils.telegram_sender import send_sync_message
+# from utils.telegram_sender import send_sync_message
 import schedule
 import time
 import logging
@@ -26,15 +26,15 @@ def job():
     previous_return_value = mongo(previous_return_value)
     mysql()
     success_message = f'Job success\nprevious_return_value: {str(previous_return_value)}'
-    send_sync_message(success_message)
+    # send_sync_message(success_message)
   except Exception as e:
     error_message = f"Job error: {str(e)}"
     logging.error(error_message)
-    send_sync_message(error_message)
+    # send_sync_message(error_message)
 
 schedule.every().day.at('22:55').do(job)
 
-send_sync_message("시작이다.")
+# send_sync_message("시작이다.")
 
 while True:
   try:
@@ -43,5 +43,5 @@ while True:
   except Exception as e:
     error_message = f'Scheduler error: {str(e)}'
     logging.error(error_message)
-    send_sync_message(error_message)
+    # send_sync_message(error_message)
     time.sleep(10)
