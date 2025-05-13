@@ -5,28 +5,24 @@ from dotenv import load_dotenv
 from telegram import Bot
 from telegram.constants import ParseMode
 from telegram.error import TelegramError
-from telegram.request import AiohttpSession
-import aiohttp
 
 # 환경 변수 로드
 load_dotenv()
 
-# ID와 토큰 가져오기
+# Telegram 설정
 my_id = os.getenv('ID')
 token = os.getenv('TOKEN')
-# Bot 인스턴스 생성
-
-# 기본 메시지 설정
 DEFAULT_MSG = "msg 변수가 비어이따"
 
+# 전역 Bot 인스턴스
+bot = Bot(token=token)
+
+# 비동기 메시지 전송
 async def send_message(msg, retries=3, delay=5):
     for attempt in range(retries):
         try:
-            # 세션과 Bot 객체를 매번 새로 생성하고, 명시적으로 닫아줌
-            async with aiohttp.ClientSession() as session:
-                bot = Bot(token=token, request=AiohttpSession(session))
-                await bot.send_message(chat_id=my_id, text=msg, parse_mode=ParseMode.HTML)
-            break  # 성공하면 반복 종료
+            await bot.send_message(chat_id=my_id, text=msg, parse_mode=ParseMode.HTML)
+            break
         except TelegramError as e:
             if attempt < retries - 1:
                 await asyncio.sleep(delay)
@@ -35,14 +31,20 @@ async def send_message(msg, retries=3, delay=5):
         except Exception as e:
             logging.error(f"Unexpected error: {str(e)}")
             break
+        finally:
+            # 연결 누수 방지를 위해 세션 닫기
+            await bot.session.close()
 
+# 동기에서 호출 가능한 wrapper
 def send_sync_message(msg=None):
     try:
         message = msg or DEFAULT_MSG
         try:
+            # 이미 asyncio 루프가 돌고 있으면 create_task
             loop = asyncio.get_running_loop()
             asyncio.create_task(send_message(message))
         except RuntimeError:
+            # 루프가 없으면 run
             asyncio.run(send_message(message))
     except Exception as e:
         logging.error(f"Error in send_sync_message: {str(e)}")

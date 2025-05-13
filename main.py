@@ -34,6 +34,8 @@ def job():
 
 schedule.every().day.at('22:55').do(job)
 
+send_sync_message("시작이다.")
+
 while True:
   try:
     schedule.run_pending()
