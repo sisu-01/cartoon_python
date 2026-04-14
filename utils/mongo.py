@@ -128,8 +128,8 @@ def create_cartoon(writer_object_id, value):
   result = cartoons.insert_one(value)
   return result.acknowledged
 
-def find_cartoons(value):
-  result = cartoons.find(value).sort({'_id': 1})
+def find_cartoons(value, projection=None):
+  result = cartoons.find(value, projection).sort({'_id': 1})
   return list(result)
 
 def reset_series(value):
